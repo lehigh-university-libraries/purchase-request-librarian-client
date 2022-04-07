@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.1
+// @version      0.2
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -74,14 +74,16 @@ function trim(input) {
 }
 
 function checkFirstRun() {
-    let username = GM_getValue("username");
-    if (username == null) {
-        username = prompt("Username for Lehigh Purchase Requests");
-        let password = prompt("Password for Lehigh Purchase Requests");
-        let url = prompt("URL for Lehigh Purchase Requests");
-        GM_setValue("username", username);
-        GM_setValue("password", password);
-        GM_setValue("url", url);
+    checkKey("username", "Username");
+    checkKey("password", "Password");
+    checkKey("url", "URL");
+}
+
+function checkKey(key, label) {
+    let value = GM_getValue(key);
+    if (value == null) {
+        value = prompt(label + " for Lehigh Purchase Requests");
+        GM_setValue(key, value);
     }
 }
 
