@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.2
+// @version      0.3
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -32,7 +32,8 @@ $(document).ready(function () {
 function submitRequest() {
     let title = trim($("#productTitle").text());
     let contributor = trim($(".contributorNameID").text());
-    let isbn = trim($(".prodDetSectionEntry:contains(ISBN-10)").next(".prodDetAttrValue").text());
+    let isbnElement = $(".prodDetSectionEntry:contains(ISBN-10)").add(".a-text-bold:contains(ISBN-10)");
+    let isbn = trim(isbnElement.next().text());
     let username = GM_getValue("username");
     let data = {
         "title": title,
