@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.3
+// @version      0.4
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -19,21 +19,41 @@
 
 $(document).ready(function () {
     checkFirstRun();
-
     initStyles();
-
-    // add button to page
-    let lehighButton = $("<button class='lehigh-button'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: Request Purchase</button>");
-    let lehighSection = $("<div>").addClass("a-section").append(lehighButton);
-    lehighButton.on("click", submitRequest);
-    $("#rightCol").prepend(lehighSection);
+    if (hasIsbn()) {
+        addToPage(buildButton());
+    }
+    else {
+        addToPage(buildNoIsbnNote());
+    }
 });
+
+function addToPage(element) {
+    $("#rightCol").prepend( $("<div>").addClass("a-section").append(element) );
+}
+
+function buildButton() {
+    let button = $("<button class='lehigh-button'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: Request Purchase</button>");
+    button.on("click", submitRequest);
+    return button;
+}
+
+function buildNoIsbnNote() {
+    return $("<p class='lehigh-button'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: No ISBN Found</div>");
+}
+
+function hasIsbn() {
+    return getIsbnLabel().length > 0;
+}
+
+function getIsbnLabel() {
+    return $(".prodDetSectionEntry:contains(ISBN-10)").add(".a-text-bold:contains(ISBN-10)");
+}
 
 function submitRequest() {
     let title = trim($("#productTitle").text());
     let contributor = trim($(".contributorNameID").text());
-    let isbnElement = $(".prodDetSectionEntry:contains(ISBN-10)").add(".a-text-bold:contains(ISBN-10)");
-    let isbn = trim(isbnElement.next().text());
+    let isbn = trim(getIsbnLabel().next().text());
     let username = GM_getValue("username");
     let data = {
         "title": title,
