@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.4
+// @version      0.5
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -21,7 +21,8 @@ $(document).ready(function () {
     checkFirstRun();
     initStyles();
     if (hasIsbn()) {
-        addToPage(buildButton());
+        buildInputDialog();
+        addToPage(buildRequestButton());
     }
     else {
         addToPage(buildNoIsbnNote());
@@ -32,14 +33,40 @@ function addToPage(element) {
     $("#rightCol").prepend( $("<div>").addClass("a-section").append(element) );
 }
 
-function buildButton() {
-    let button = $("<button class='lehigh-button'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: Request Purchase</button>");
-    button.on("click", submitRequest);
-    return button;
+function buildRequestButton() {
+    let openButton = $("<button class='lehigh-button lehigh-input-button'><img class='lehigh-logo' src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'>Lehigh: Request Purchase</button>");
+    openButton.on("click", openInput);
+    let input_container = $("<div class='lehigh-input-container' placeholder='Enter request details.'>").append(openButton);
+    return input_container;
+}
+
+function buildInputDialog() {
+    let dialog = $( `
+        <dialog class="lehigh-dialog">
+            <form class="lehigh-form" method="dialog">
+                <div><img class="lehigh-logo" src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'>Lehigh Purchase Request</div>
+                <div class="lehigh-format">
+                    <span>Format:</span>
+                    <input type="radio" name="format" id="lehigh-format-electronic" value="electronic"><label for="lehigh-format-electronic">Electronic</label>
+                    <input type="radio" name="format" id="lehigh-format-print" value="print"><label for="lehigh-format-print">Print</label>
+                </div>
+                <textarea class="lehigh-description" placeholder="Enter desired edition, budget code, any other details"></textarea>
+                <input type="submit" class="lehigh-submit-button" value="Submit Lehigh Purchase Request"/>
+            </form>
+        </dialog>
+    `);
+    $("body").append(dialog);
+    $(".lehigh-form").on("submit", formSubmitted);
+}
+
+function formSubmitted(event) {
+    event.preventDefault();
+    $(".lehigh-dialog").hide();
+    submitRequest();
 }
 
 function buildNoIsbnNote() {
-    return $("<p class='lehigh-button'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: No ISBN Found</div>");
+    return $("<p class='lehigh-button-container'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: No ISBN Found</div>");
 }
 
 function hasIsbn() {
@@ -50,16 +77,24 @@ function getIsbnLabel() {
     return $(".prodDetSectionEntry:contains(ISBN-10)").add(".a-text-bold:contains(ISBN-10)");
 }
 
+function openInput() {
+    $(".lehigh-dialog").get(0).showModal();
+}
+
 function submitRequest() {
     let title = trim($("#productTitle").text());
     let contributor = trim($(".contributorNameID").text());
     let isbn = trim(getIsbnLabel().next().text());
     let username = GM_getValue("username");
+    let format = trim($(".lehigh-format input:checked").val());
+    let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
         "contributor": contributor,
         "isbn": isbn,
-        "requesterUsername": username
+        "requesterUsername": username,
+        "format": format,
+        "requesterComments": comments
     };
     console.log("data: ", data);
     GM_xmlhttpRequest({
@@ -110,8 +145,39 @@ function checkKey(key, label) {
 
 function initStyles() {
     let styles = `
+        .lehigh-dialog {
+            border: 1px solid black;
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+        }
+        .lehigh-dialog::backdrop {
+            background: rgba(0, 0, 0, .5);
+        }
+        .lehigh-form > :first-child {
+            font-size: 120%;
+        }
+        .lehigh-form > *:not(:first-child) {
+            margin-top: 1rem;
+        }
+        .lehigh-format span {
+            margin-right: 1rem;
+        }
+        .lehigh-format label {
+            display: inline;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            font-weight: normal;
+        }
+        .lehigh-format input {
+            display: inline;
+        }
         .lehigh-button {
-             padding: 10px;
+            padding: 10px;
+        }
+        .lehigh-logo {
+            margin-right: 0.5rem;
         }
     `;
     GM_addStyle(styles);
