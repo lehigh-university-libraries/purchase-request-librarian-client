@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.5
+// @version      0.5.1
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -61,7 +61,7 @@ function buildInputDialog() {
 
 function formSubmitted(event) {
     event.preventDefault();
-    $(".lehigh-dialog").hide();
+    $(".lehigh-dialog").get(0).close();
     submitRequest();
 }
 
