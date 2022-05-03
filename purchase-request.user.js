@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.6
+// @version      0.7
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -53,8 +53,16 @@ function buildInputDialog() {
                 <div class="lehigh-select-container">
                     <label for="lehigh-status">Send to:</label>
                     <select name="status" id="lehigh-status">
-                        <option value="approved">Approved</option>
+                        <option value="approved" selected="selected">Approved</option>
                         <option value="holding">Holding Tank</option>
+                    </select>
+                </div>
+                <div class="lehigh-select-container">
+                    <label for="lehigh-action">On Arrival:</label>
+                    <select name="action" id="lehigh-action">
+                        <option value="" selected="selected">No Action</option>
+                        <option value="email">Email Selector</option>
+                        <option value="hold">On Hold for Selector</option>
                     </select>
                 </div>
                 <textarea class="lehigh-description" placeholder="Enter desired edition, budget code, any other details"></textarea>
@@ -95,6 +103,7 @@ function submitRequest() {
     let username = GM_getValue("username");
     let format = trim($(".lehigh-format input:checked").val());
     let speed = $("#lehigh-status option:selected").val();
+    let destination = trim($("#lehigh-action option:selected").val());
     let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
@@ -103,6 +112,7 @@ function submitRequest() {
         "requesterUsername": username,
         "format": format,
         "speed": speed,
+        "destination": destination,
         "requesterComments": comments
     };
     console.log("data: ", data);
