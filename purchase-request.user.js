@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.5.1
+// @version      0.6
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -45,10 +45,17 @@ function buildInputDialog() {
         <dialog class="lehigh-dialog">
             <form class="lehigh-form" method="dialog">
                 <div><img class="lehigh-logo" src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'>Lehigh Purchase Request</div>
-                <div class="lehigh-format">
+                <div class="lehigh-format lehigh-radio-button-group">
                     <span>Format:</span>
                     <input type="radio" name="format" id="lehigh-format-electronic" value="electronic"><label for="lehigh-format-electronic">Electronic</label>
                     <input type="radio" name="format" id="lehigh-format-print" value="print"><label for="lehigh-format-print">Print</label>
+                </div>
+                <div class="lehigh-select-container">
+                    <label for="lehigh-status">Send to:</label>
+                    <select name="status" id="lehigh-status">
+                        <option value="approved">Approved</option>
+                        <option value="holding">Holding Tank</option>
+                    </select>
                 </div>
                 <textarea class="lehigh-description" placeholder="Enter desired edition, budget code, any other details"></textarea>
                 <input type="submit" class="lehigh-submit-button" value="Submit Lehigh Purchase Request"/>
@@ -87,6 +94,7 @@ function submitRequest() {
     let isbn = trim(getIsbnLabel().next().text());
     let username = GM_getValue("username");
     let format = trim($(".lehigh-format input:checked").val());
+    let speed = $("#lehigh-status option:selected").val();
     let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
@@ -94,6 +102,7 @@ function submitRequest() {
         "isbn": isbn,
         "requesterUsername": username,
         "format": format,
+        "speed": speed,
         "requesterComments": comments
     };
     console.log("data: ", data);
@@ -161,17 +170,22 @@ function initStyles() {
         .lehigh-form > *:not(:first-child) {
             margin-top: 1rem;
         }
-        .lehigh-format span {
+        .lehigh-radio-button-group span {
             margin-right: 1rem;
         }
-        .lehigh-format label {
+        .lehigh-radio-button-group label {
             display: inline;
             margin-left: 0.25rem;
             margin-right: 1rem;
             font-weight: normal;
         }
-        .lehigh-format input {
+        .lehigh-radio-button-group input {
             display: inline;
+        }
+        .lehigh-select-container label {
+            margin-right: 1rem;
+            display: inline;
+            font-weight: normal;
         }
         .lehigh-button {
             padding: 10px;
