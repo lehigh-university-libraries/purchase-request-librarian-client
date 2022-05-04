@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.7
+// @version      0.7.2
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -110,6 +110,7 @@ function submitRequest() {
         "contributor": contributor,
         "isbn": isbn,
         "requesterUsername": username,
+        "librarianUsername": username,
         "format": format,
         "speed": speed,
         "destination": destination,
