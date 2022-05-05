@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,8 +24,8 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
 
     private static final RequestMatcher
-        PROTECTED_URLS = AnyRequestMatcher.INSTANCE,
-        PUBLIC_URLS = new NegatedRequestMatcher(PROTECTED_URLS);
+    PUBLIC_URLS = new AntPathRequestMatcher("/resources/**"),
+    PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
