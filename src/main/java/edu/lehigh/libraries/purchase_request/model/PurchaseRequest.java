@@ -22,6 +22,16 @@ public class PurchaseRequest {
 
     private String isbn;
 
+    private String requesterUsername;
+
+    private String librarianUsername;
+
+    private String format;
+
+    private String speed;
+
+    private String destination;
+
     private String requesterComments;
 
     private String clientName;
