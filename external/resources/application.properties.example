@@ -1,0 +1,30 @@
+# *** This file contains example configuration properties for application.properties.  See README.md. *** 
+
+
+# General
+
+librarian-client.enabled=true
+
+
+# User Database
+
+librarian-client.db.host=some_database_host
+librarian-client.db.name=some_database_name
+librarian-client.db.username=some_admin_username
+librarian-client.db.password=abc123
+
+spring.datasource.url=jdbc:mysql://${librarian-client.db.host:localhost}:3306/${librarian-client.db.name}
+spring.datasource.username=${librarian-client.db.username}
+spring.datasource.password=${librarian-client.db.password}
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
+
+# First-time use only
+# spring.jpa.hibernate.ddl-auto=create-drop
+
+
+# Workflow Server
+
+librarian-client.workflow-server.username=workflow_username
+librarian-client.workflow-server.password=abc123
+librarian-client.workflow-server.base-url=https://hostname.someuniversity.edu/workflow
