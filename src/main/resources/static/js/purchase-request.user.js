@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.7.2
+// @version      0.8
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -30,7 +30,15 @@ $(document).ready(function () {
 });
 
 function addToPage(element) {
-    $("#rightCol").prepend( $("<div>").addClass("a-section").append(element) );
+    let container = $("<div>").addClass("a-section").append(element);
+    if ($("#rightCol").length) {
+        // normal item page layout
+        $("#rightCol").prepend(container);
+    }
+    else {
+        // giant purchase options panel in center of page, used for some items
+        $("#ppdFixedGridRightColumn").prepend(container);
+    }
 }
 
 function buildRequestButton() {
