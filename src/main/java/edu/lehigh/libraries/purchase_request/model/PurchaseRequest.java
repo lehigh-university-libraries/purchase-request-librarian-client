@@ -14,6 +14,8 @@ public class PurchaseRequest {
 
     private Long id;
 
+    private String status;
+
     @NotNull
     private String title;
     
@@ -27,8 +29,6 @@ public class PurchaseRequest {
     private String librarianUsername;
 
     private String format;
-
-    private String speed;
 
     private String destination;
 

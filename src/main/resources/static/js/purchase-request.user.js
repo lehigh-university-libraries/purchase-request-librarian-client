@@ -53,8 +53,8 @@ function buildInputDialog() {
                 <div class="lehigh-select-container">
                     <label for="lehigh-status">Send to:</label>
                     <select name="status" id="lehigh-status">
-                        <option value="approved" selected="selected">Approved</option>
-                        <option value="holding">Holding Tank</option>
+                        <option value="Approved" selected="selected">Approved</option>
+                        <option value="Holding Tank">Holding Tank</option>
                     </select>
                 </div>
                 <div class="lehigh-select-container">
@@ -102,7 +102,7 @@ function submitRequest() {
     let isbn = trim(getIsbnLabel().next().text());
     let username = GM_getValue("username");
     let format = trim($(".lehigh-format input:checked").val());
-    let speed = $("#lehigh-status option:selected").val();
+    let status = $("#lehigh-status option:selected").val();
     let destination = trim($("#lehigh-action option:selected").val());
     let comments = trim($(".lehigh-description").val());
     let data = {
@@ -112,7 +112,7 @@ function submitRequest() {
         "requesterUsername": username,
         "librarianUsername": username,
         "format": format,
-        "speed": speed,
+        "status": status,
         "destination": destination,
         "requesterComments": comments
     };
