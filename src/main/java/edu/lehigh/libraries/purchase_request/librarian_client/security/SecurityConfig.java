@@ -24,8 +24,8 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
 
     private static final RequestMatcher
-    PUBLIC_URLS = new AntPathRequestMatcher("/resources/**"),
-    PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
+        PUBLIC_URLS = new AntPathRequestMatcher("/resources/**"),
+        PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
