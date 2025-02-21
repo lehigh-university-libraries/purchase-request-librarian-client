@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      0.8.2
+// @version      1.0.3
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -42,7 +42,7 @@ function addToPage(element) {
 }
 
 function buildRequestButton() {
-    let openButton = $("<button class='lehigh-button lehigh-input-button'><img class='lehigh-logo' src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'>Lehigh: Request Purchase</button>");
+    let openButton = $("<button class='lehigh-button lehigh-input-button'><img class='lehigh-logo' src='https://www2.lehigh.edu/sites/www2/files/favicons/favicon32.png'>Lehigh: Request Purchase</button>");
     openButton.on("click", openInput);
     let input_container = $("<div class='lehigh-input-container' placeholder='Enter request details.'>").append(openButton);
     return input_container;
@@ -52,7 +52,7 @@ function buildInputDialog() {
     let dialog = $( `
         <dialog class="lehigh-dialog">
             <form class="lehigh-form" method="dialog">
-                <div><img class="lehigh-logo" src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'>Lehigh Purchase Request</div>
+                <div><img class="lehigh-logo" src='https://www2.lehigh.edu/sites/www2/files/favicons/favicon32.png'>Lehigh Purchase Request</div>
                 <div class="lehigh-format lehigh-radio-button-group">
                     <span>Format:</span>
                     <input type="radio" name="format" id="lehigh-format-electronic" value="electronic"><label for="lehigh-format-electronic">Electronic</label>
@@ -89,7 +89,7 @@ function formSubmitted(event) {
 }
 
 function buildNoIsbnNote() {
-    return $("<p class='lehigh-button-container'><img src='https://library.lehigh.edu/sites/library.lehigh.edu/themes/library2013/favicon.ico'> Lehigh: No ISBN Found</div>");
+    return $("<p class='lehigh-button-container'><img src='https://www2.lehigh.edu/sites/www2/files/favicons/favicon32.png'> Lehigh: No ISBN Found</div>");
 }
 
 function hasIsbn() {
