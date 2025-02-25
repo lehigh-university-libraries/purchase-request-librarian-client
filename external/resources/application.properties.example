@@ -28,3 +28,8 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
 librarian-client.workflow-server.username=workflow_username
 librarian-client.workflow-server.password=abc123
 librarian-client.workflow-server.base-url=https://hostname.someuniversity.edu/workflow
+
+
+# Librarian Call Number Server
+
+librarian-client.librarian-call-number-server.base-url=https://hostname.someuniversity.edu/librarians

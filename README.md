@@ -93,6 +93,14 @@ For connecting to the Purchase Request Workflow Proxy Server via its API.
 | librarian-client.workflow-server.password | API password | Y |
 | librarian-client.workflow-server.base-url | API base URL | Y |
 
+### Librarian Call Number Server Section
+
+For connecting to the Librarian Call Numbers server, to load the list of selector options to display.
+
+| Property | Description | Required |
+| -- | -- | -- |
+| librarian-client.workflow-server.base-url | API base URL | N |
+
 ### Debugging
 
 Optional properties.  See other [Spring Boot logging properties](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging) as well.

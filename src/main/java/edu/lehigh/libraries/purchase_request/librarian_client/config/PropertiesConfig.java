@@ -24,6 +24,7 @@ public class PropertiesConfig {
     
     private Database db;
     private WorkflowServer workflowServer;
+    private LibrarianCallNumberServer librarianCallNumberServer;
 
     @Getter @Setter
     /**
@@ -72,6 +73,16 @@ public class PropertiesConfig {
          * Workflow Proxy Server password
          */
         private String password;
+
+    }
+
+    @Getter @Setter
+    public static class LibrarianCallNumberServer {
+
+        /**
+         * Librarian Call Number Server base url for API calls
+         */
+        private String baseUrl;
 
     }
 

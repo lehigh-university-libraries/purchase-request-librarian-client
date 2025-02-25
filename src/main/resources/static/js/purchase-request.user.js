@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      1.0.3
+// @version      1.1.0
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -27,6 +27,7 @@ $(document).ready(function () {
     else {
         addToPage(buildNoIsbnNote());
     }
+    reloadLibrarians();
 });
 
 function addToPage(element) {
@@ -73,11 +74,29 @@ function buildInputDialog() {
                         <option value="hold">On Hold for Selector</option>
                     </select>
                 </div>
+                <div class="lehigh-select-container">
+                    <label for="lehigh-librarian">Selector:</label>
+                    <select name="action" id="lehigh-librarian">
+                        <option value="" selected="selected">Auto-assign</option>
+                    </select>
+                </div>
                 <textarea class="lehigh-description" placeholder="Enter desired edition, budget code, any other details"></textarea>
                 <input type="submit" class="lehigh-submit-button" value="Submit Lehigh Purchase Request"/>
             </form>
         </dialog>
     `);
+
+    let librarians = JSON.parse(GM_getValue("librarians", "[]"));
+    let username = GM_getValue("username");
+    librarians.sort((a, b) => a.firstName.localeCompare(b.firstName));
+    librarians.forEach(function (librarian) {
+      $("#lehigh-librarian", dialog).append($('<option>', {
+          value: librarian.username,
+          text: `${librarian.firstName} ${librarian.lastName}`,
+          selected: librarian.username == username,
+      }));
+    });
+
     $("body").append(dialog);
     $(".lehigh-form").on("submit", formSubmitted);
 }
@@ -112,13 +131,18 @@ function submitRequest() {
     let format = trim($(".lehigh-format input:checked").val());
     let status = $("#lehigh-status option:selected").val();
     let destination = trim($("#lehigh-action option:selected").val());
+    let librarian = trim($("#lehigh-librarian option:selected").val());
+    if (librarian == "") {
+        librarian = null;
+    }
     let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
         "contributor": contributor,
         "isbn": isbn,
-        "requesterUsername": username,
-        "librarianUsername": username,
+        "requesterUsername": librarian,
+        "librarianUsername": librarian,
+        "reporterName": username,
         "format": format,
         "status": status,
         "destination": destination,
@@ -169,6 +193,34 @@ function checkKey(key, label) {
         value = prompt(label + " for Lehigh Purchase Requests");
         GM_setValue(key, value);
     }
+}
+
+function reloadLibrarians() {
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: GM_getValue("url").replace("purchase-requests", "librarians"),
+        user: GM_getValue("username"),
+        password: GM_getValue("password"),
+        onerror: function (event) {
+            console.log("error loading librarians: ", event);
+            alert("Failed to load librarians list; browser error.");
+        },
+        onload: function (result) {
+            console.log("result: ", result);
+            if (result.status == 200) {
+                let oldLibrarians = GM_getValue("librarians", "[]");
+                let librarians = result.response;
+                if (librarians != oldLibrarians) {
+                    GM_setValue("librarians", librarians);
+                    alert("Loaded updated list of librarian selectors for Lehigh purchasing; " + 
+                        "refresh page and reopen popup to use.");
+                }
+            }
+            else {
+                alert("Failed to reload librarians list; status: " + result.status);
+            }
+        }
+    });
 }
 
 function initStyles() {
