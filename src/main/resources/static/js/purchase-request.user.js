@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      1.1.0
+// @version      1.2.0
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -64,6 +64,7 @@ function buildInputDialog() {
                     <select name="status" id="lehigh-status">
                         <option value="Approved" selected="selected">Approved</option>
                         <option value="Pending Review">Pending Review</option>
+                        <option value="New">New</option>
                     </select>
                 </div>
                 <div class="lehigh-select-container">
