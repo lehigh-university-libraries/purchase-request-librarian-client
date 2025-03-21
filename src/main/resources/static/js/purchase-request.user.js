@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      1.2.0
+// @version      1.3.0
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -126,7 +126,12 @@ function openInput() {
 
 function submitRequest() {
     let title = trim($("#productTitle").text());
-    let contributor = trim($(".author > .a-link-normal").add(".author > .a-declarative > .a-link-normal").text());
+    let contributor = trim(
+        $(".author > .a-link-normal")
+            .add(".author > a[data-a-component='text-link']")
+            .add(".author > .a-declarative > .a-link-normal")
+            .text()
+        );
     let isbn = trim(getIsbnLabel().next().text());
     let username = GM_getValue("username");
     let format = trim($(".lehigh-format input:checked").val());
