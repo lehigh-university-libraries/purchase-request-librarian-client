@@ -99,7 +99,7 @@ For connecting to the Librarian Call Numbers server, to load the list of selecto
 
 | Property | Description | Required |
 | -- | -- | -- |
-| librarian-client.workflow-server.base-url | API base URL | N |
+| librarian-client.librarian-call-number-server.base-url | API base URL | N |
 
 ### Debugging
 
