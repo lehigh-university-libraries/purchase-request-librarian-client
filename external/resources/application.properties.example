@@ -16,7 +16,7 @@ librarian-client.db.password=abc123
 spring.datasource.url=jdbc:mysql://${librarian-client.db.host:localhost}:3306/${librarian-client.db.name}
 spring.datasource.username=${librarian-client.db.username}
 spring.datasource.password=${librarian-client.db.password}
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
 
 # First-time use only
