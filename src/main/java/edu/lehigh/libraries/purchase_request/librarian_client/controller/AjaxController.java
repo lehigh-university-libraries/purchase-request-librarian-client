@@ -2,8 +2,8 @@ package edu.lehigh.libraries.purchase_request.librarian_client.controller;
 
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpStatus;
