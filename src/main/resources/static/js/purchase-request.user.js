@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      1.3.0
+// @version      1.4.2
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -28,6 +28,7 @@ $(document).ready(function () {
         addToPage(buildNoIsbnNote());
     }
     reloadLibrarians();
+    reloadPermanentLocations();
 });
 
 function addToPage(element) {
@@ -75,6 +76,12 @@ function buildInputDialog() {
                         <option value="hold">On Hold for Selector</option>
                     </select>
                 </div>
+                <div class="lehigh-select-container" id="lehigh-permanent-location-container" style="display:none">
+                    <label for="lehigh-permanent-location">Permanent Location:</label>
+                    <select name="permanentLocation" id="lehigh-permanent-location">
+                        <option value="" selected="selected"></option>
+                    </select>
+                </div>
                 <div class="lehigh-select-container">
                     <label for="lehigh-librarian">Selector:</label>
                     <select name="action" id="lehigh-librarian">
@@ -98,14 +105,29 @@ function buildInputDialog() {
       }));
     });
 
+    let permanentLocations = JSON.parse(GM_getValue("permanentLocations", "[]"));
+    permanentLocations.forEach(function (location) {
+        $("#lehigh-permanent-location", dialog).append($('<option>', {
+            value: location,
+            text: location,
+        }));
+    });
+
     $("body").append(dialog);
     $(".lehigh-form").on("submit", formSubmitted);
+    $("#lehigh-status").on("change", updatePermanentLocationVisibility);
+    updatePermanentLocationVisibility();
 }
 
 function formSubmitted(event) {
     event.preventDefault();
     $(".lehigh-dialog").get(0).close();
     submitRequest();
+}
+
+function updatePermanentLocationVisibility() {
+    let isApproved = $("#lehigh-status option:selected").val() === "Approved";
+    $("#lehigh-permanent-location-container").toggle(isApproved);
 }
 
 function buildNoIsbnNote() {
@@ -141,6 +163,7 @@ function submitRequest() {
     if (librarian == "") {
         librarian = null;
     }
+    let permanentLocation = (status === "Approved") ? trim($("#lehigh-permanent-location option:selected").val()) : null;
     let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
@@ -152,6 +175,7 @@ function submitRequest() {
         "format": format,
         "status": status,
         "destination": destination,
+        "permanentLocation": permanentLocation,
         "requesterComments": comments
     };
     console.log("data: ", data);
@@ -224,6 +248,32 @@ function reloadLibrarians() {
             }
             else {
                 alert("Failed to reload librarians list; status: " + result.status);
+            }
+        }
+    });
+}
+
+function reloadPermanentLocations() {
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: GM_getValue("url").replace("purchase-requests", "permanent-location"),
+        user: GM_getValue("username"),
+        password: GM_getValue("password"),
+        onerror: function (event) {
+            console.log("error loading permanent locations: ", event);
+            alert("Failed to load permanent locations list; browser error.");
+        },
+        onload: function (result) {
+            if (result.status == 200) {
+                let oldLocations = GM_getValue("permanentLocations", "[]");
+                let locations = result.response;
+                if (locations != oldLocations) {
+                    GM_setValue("permanentLocations", locations);
+                    alert("Loaded updated list of permanent locations; refresh page and reopen popup to use.");
+                }
+            }
+            else {
+                alert("Failed to reload permanent locations list; status: " + result.status);
             }
         }
     });

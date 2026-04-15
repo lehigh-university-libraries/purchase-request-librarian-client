@@ -32,6 +32,8 @@ public class PurchaseRequest {
 
     private String destination;
 
+    private String permanentLocation;
+
     private String requesterComments;
 
     private String clientName;
