@@ -44,13 +44,21 @@ public class WorkflowService {
     }
 
     public List<String> getPermanentLocations() {
+        return getFieldOptions("/permanent-location");
+    }
+
+    public List<String> getFundCodes() {
+        return getFieldOptions("/fund-code");
+    }
+
+    private List<String> getFieldOptions(String path) {
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        String[] locations = restTemplate.exchange(
-            BASE_URL + "/permanent-location",
+        String[] values = restTemplate.exchange(
+            BASE_URL + path,
             HttpMethod.GET,
             request,
             String[].class).getBody();
-        return Arrays.asList(locations);
+        return Arrays.asList(values);
     }
 
     public boolean submitRequest(PurchaseRequest purchaseRequest) {

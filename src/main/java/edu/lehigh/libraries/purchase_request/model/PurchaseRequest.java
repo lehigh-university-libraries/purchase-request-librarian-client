@@ -34,6 +34,8 @@ public class PurchaseRequest {
 
     private String permanentLocation;
 
+    private String fundCode;
+
     private String requesterComments;
 
     private String clientName;

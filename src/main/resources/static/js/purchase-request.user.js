@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Submit Library Purchase Request
 // @namespace    http://library.lehigh.edu/
-// @version      1.4.2
+// @version      1.5.0
 // @description  Submit the item on the current page as a library purchase request.
 // @author       Maccabee Levine
 // @match        https://www.amazon.com/*/dp/*
@@ -29,6 +29,7 @@ $(document).ready(function () {
     }
     reloadLibrarians();
     reloadPermanentLocations();
+    reloadFundCodes();
 });
 
 function addToPage(element) {
@@ -82,6 +83,12 @@ function buildInputDialog() {
                         <option value="" selected="selected"></option>
                     </select>
                 </div>
+                <div class="lehigh-select-container" id="lehigh-fund-code-container" style="display:none">
+                    <label for="lehigh-fund-code">Fund Code:</label>
+                    <select name="fundCode" id="lehigh-fund-code">
+                        <option value="" selected="selected"></option>
+                    </select>
+                </div>
                 <div class="lehigh-select-container">
                     <label for="lehigh-librarian">Selector:</label>
                     <select name="action" id="lehigh-librarian">
@@ -113,10 +120,18 @@ function buildInputDialog() {
         }));
     });
 
+    let fundCodes = JSON.parse(GM_getValue("fundCodes", "[]"));
+    fundCodes.forEach(function (fundCode) {
+        $("#lehigh-fund-code", dialog).append($('<option>', {
+            value: fundCode,
+            text: fundCode,
+        }));
+    });
+
     $("body").append(dialog);
     $(".lehigh-form").on("submit", formSubmitted);
-    $("#lehigh-status").on("change", updatePermanentLocationVisibility);
-    updatePermanentLocationVisibility();
+    $("#lehigh-status").on("change", updateApprovedFieldVisibility);
+    updateApprovedFieldVisibility();
 }
 
 function formSubmitted(event) {
@@ -125,9 +140,10 @@ function formSubmitted(event) {
     submitRequest();
 }
 
-function updatePermanentLocationVisibility() {
+function updateApprovedFieldVisibility() {
     let isApproved = $("#lehigh-status option:selected").val() === "Approved";
     $("#lehigh-permanent-location-container").toggle(isApproved);
+    $("#lehigh-fund-code-container").toggle(isApproved);
 }
 
 function buildNoIsbnNote() {
@@ -164,6 +180,7 @@ function submitRequest() {
         librarian = null;
     }
     let permanentLocation = (status === "Approved") ? trim($("#lehigh-permanent-location option:selected").val()) : null;
+    let fundCode = (status === "Approved") ? trim($("#lehigh-fund-code option:selected").val()) : null;
     let comments = trim($(".lehigh-description").val());
     let data = {
         "title": title,
@@ -176,6 +193,7 @@ function submitRequest() {
         "status": status,
         "destination": destination,
         "permanentLocation": permanentLocation,
+        "fundCode": fundCode,
         "requesterComments": comments
     };
     console.log("data: ", data);
@@ -226,54 +244,38 @@ function checkKey(key, label) {
 }
 
 function reloadLibrarians() {
-    GM_xmlhttpRequest({
-        method: "GET",
-        url: GM_getValue("url").replace("purchase-requests", "librarians"),
-        user: GM_getValue("username"),
-        password: GM_getValue("password"),
-        onerror: function (event) {
-            console.log("error loading librarians: ", event);
-            alert("Failed to load librarians list; browser error.");
-        },
-        onload: function (result) {
-            console.log("result: ", result);
-            if (result.status == 200) {
-                let oldLibrarians = GM_getValue("librarians", "[]");
-                let librarians = result.response;
-                if (librarians != oldLibrarians) {
-                    GM_setValue("librarians", librarians);
-                    alert("Loaded updated list of librarian selectors for Lehigh purchasing; " + 
-                        "refresh page and reopen popup to use.");
-                }
-            }
-            else {
-                alert("Failed to reload librarians list; status: " + result.status);
-            }
-        }
-    });
+    reloadCachedList("librarians", "librarians", "librarian selectors for Lehigh purchasing");
 }
 
 function reloadPermanentLocations() {
+    reloadCachedList("permanent-location", "permanentLocations", "permanent locations");
+}
+
+function reloadFundCodes() {
+    reloadCachedList("fund-code", "fundCodes", "fund codes");
+}
+
+function reloadCachedList(urlSegment, storageKey, label) {
     GM_xmlhttpRequest({
         method: "GET",
-        url: GM_getValue("url").replace("purchase-requests", "permanent-location"),
+        url: GM_getValue("url").replace("purchase-requests", urlSegment),
         user: GM_getValue("username"),
         password: GM_getValue("password"),
         onerror: function (event) {
-            console.log("error loading permanent locations: ", event);
-            alert("Failed to load permanent locations list; browser error.");
+            console.log("error loading " + label + ": ", event);
+            alert("Failed to load " + label + " list; browser error.");
         },
         onload: function (result) {
             if (result.status == 200) {
-                let oldLocations = GM_getValue("permanentLocations", "[]");
-                let locations = result.response;
-                if (locations != oldLocations) {
-                    GM_setValue("permanentLocations", locations);
-                    alert("Loaded updated list of permanent locations; refresh page and reopen popup to use.");
+                let oldValue = GM_getValue(storageKey, "[]");
+                let newValue = result.response;
+                if (newValue != oldValue) {
+                    GM_setValue(storageKey, newValue);
+                    alert("Loaded updated list of " + label + "; refresh page and reopen popup to use.");
                 }
             }
             else {
-                alert("Failed to reload permanent locations list; status: " + result.status);
+                alert("Failed to reload " + label + " list; status: " + result.status);
             }
         }
     });

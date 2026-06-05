@@ -107,6 +107,28 @@ public class AjaxController {
         return new ResponseEntity<List<String>>(locations, HttpStatus.OK);
     }
 
+    @GetMapping("/fund-code")
+    ResponseEntity<List<String>> getFundCodes(Authentication authentication) {
+        log.info("Request: GET /fund-code");
+
+        List<String> fundCodes;
+        try {
+            fundCodes = workflowService.getFundCodes();
+        }
+        catch (Exception e) {
+            if (e instanceof BadRequest) {
+                log.warn("Caught HTTP client exception, re=throwing", e);
+                throw e;
+            }
+            else {
+                log.error("Could not load fund codes list", e);
+                return ResponseEntity.internalServerError().build();
+            }
+        }
+
+        return new ResponseEntity<List<String>>(fundCodes, HttpStatus.OK);
+    }
+
     @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Problem with input")
     @ExceptionHandler({ConstraintViolationException.class, BadRequest.class})
     public void error() {
