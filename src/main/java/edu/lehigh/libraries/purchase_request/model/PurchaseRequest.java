@@ -32,6 +32,10 @@ public class PurchaseRequest {
 
     private String destination;
 
+    private String permanentLocation;
+
+    private String fundCode;
+
     private String requesterComments;
 
     private String clientName;

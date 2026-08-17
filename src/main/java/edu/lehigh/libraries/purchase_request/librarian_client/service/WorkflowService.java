@@ -1,9 +1,13 @@
 package edu.lehigh.libraries.purchase_request.librarian_client.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +41,24 @@ public class WorkflowService {
         headers.setBasicAuth(
             config.getWorkflowServer().getUsername(),
             config.getWorkflowServer().getPassword());
+    }
+
+    public List<String> getPermanentLocations() {
+        return getFieldOptions("/permanent-location");
+    }
+
+    public List<String> getFundCodes() {
+        return getFieldOptions("/fund-code");
+    }
+
+    private List<String> getFieldOptions(String path) {
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        String[] values = restTemplate.exchange(
+            BASE_URL + path,
+            HttpMethod.GET,
+            request,
+            String[].class).getBody();
+        return Arrays.asList(values);
     }
 
     public boolean submitRequest(PurchaseRequest purchaseRequest) {
