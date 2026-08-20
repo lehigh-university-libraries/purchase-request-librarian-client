@@ -33,7 +33,7 @@ The Lost Items Client combines a TamperMonkey script and a Java Spring Boot appl
 
 ### Server
 
-- Java SE.  Tested on Java SE 11 (LTE).
+- Java SE.  Tested on Java SE 21 (LTS).
 - Workflow Proxy Server
 
 ## Initial Setup
