@@ -1,6 +1,6 @@
 package edu.lehigh.libraries.purchase_request.model;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

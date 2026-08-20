@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,19 +31,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
-            .and()
-            .csrf().disable()
-            .authorizeHttpRequests().requestMatchers(PROTECTED_URLS).authenticated()
-            .and()
-            .authorizeHttpRequests().requestMatchers(PUBLIC_URLS).permitAll()
-            .and()
-            .httpBasic().realmName("purchase-request-browser-plugin")
-            .and()
-            .formLogin().disable()
-            .logout().disable();
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_URLS).permitAll()
+                .requestMatchers(PROTECTED_URLS).authenticated()
+            )
+            .httpBasic(basic -> basic.realmName("purchase-request-browser-plugin"))
+            .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
 
